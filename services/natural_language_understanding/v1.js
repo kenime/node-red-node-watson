@@ -27,7 +27,8 @@ module.exports = function (RED) {
     'keyword': 'keywords',
     'metadata': 'metadata',
     'relation': 'relations',
-    'semantic': 'semantic_roles'
+    'semantic': 'semantic_roles',
+    'syntax': 'syntax'
   };
 
   var pkg = require('../../package.json'),
@@ -79,6 +80,17 @@ module.exports = function (RED) {
     return Promise.resolve();
   }
 
+  function checkNonFeatureOptions(config, options) {
+    var limitCharacters = parseInt(config.limittextcharacters);
+
+    if (! isNaN(limitCharacters) && 0 < limitCharacters) {
+      options.limit_text_characters = limitCharacters;
+    }
+
+    return Promise.resolve();
+  }
+
+
   function checkFeatureRequest(config, options) {
     var message = '',
       enabled_features = null;
@@ -108,6 +120,13 @@ module.exports = function (RED) {
     }
   }
 
+  function processCategoriesOptions(config, features) {
+    if (features.categories) {
+      features.categories.limit =
+         config['limitcategories'] ? parseInt(config['limitcategories']) : 3;
+    }
+  }
+
   function processEmotionOptions(config, features) {
     if (features.emotion && config['doc-emotion-target']) {
       features.emotion.targets = config['doc-emotion-target'].split(',');
@@ -131,6 +150,20 @@ module.exports = function (RED) {
       }
       if (msg.nlu_options && msg.nlu_options.entity_model) {
         features.entities.model = msg.nlu_options.entity_model;
+      }
+    }
+  }
+
+  function processSyntaxOptions(msg, config, features) {
+    if (features.syntax) {
+      features.syntax.sentences =
+          config['syntax-sentences'] ? config['syntax-sentences'] : false;
+      if (config['syntax-tokens-lemma'] || config['syntax-tokens-pos']) {
+        features.syntax.tokens = {};
+        features.syntax.tokens.lemma =
+           config['syntax-tokens-lemma'] ? config['syntax-tokens-lemma'] : false;
+        features.syntax.tokens.part_of_speech =
+              config['syntax-tokens-pos'] ? config['syntax-tokens-pos'] : false;
       }
     }
   }
@@ -170,12 +203,14 @@ module.exports = function (RED) {
   function checkFeatureOptions(msg, config, options) {
     if (options && options.features) {
       processConceptsOptions(config, options.features);
+      processCategoriesOptions(config, options.features);
       processEmotionOptions(config, options.features);
       processSentimentOptions(config, options.features);
       processEntitiesOptions(msg,config, options.features);
       processRelationsOptions(msg,config, options.features);
       processKeywordsOptions(config, options.features);
       processSemanticRolesOptions(config, options.features);
+      processSyntaxOptions(msg,config, options.features);
     }
     return Promise.resolve();
   }
@@ -183,7 +218,7 @@ module.exports = function (RED) {
   function invokeService(options) {
     var nlu = null,
       serviceSettings = {
-        version: '2018-09-21',
+        version: '2018-11-16',
         headers: {
           'User-Agent': pkg.name + '-' + pkg.version
         }
@@ -259,6 +294,9 @@ module.exports = function (RED) {
         })
         .then(function(){
           return checkFeatureOptions(msg, config, options);
+        })
+        .then(function(){
+          return checkNonFeatureOptions(config, options);
         })
         .then(function(){
           node.status({fill:'blue', shape:'dot', text:'requesting'});

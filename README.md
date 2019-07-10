@@ -7,6 +7,51 @@ Node-RED Watson Nodes for IBM Cloud
 
 <a href="https://cla-assistant.io/watson-developer-cloud/node-red-node-watson"><img src="https://cla-assistant.io/readme/badge/watson-developer-cloud/node-red-node-watson" alt="CLA assistant" /></a>
 
+### New in version 0.7.8
+- NLU Node - Add Syntax to list of selectable features
+
+### New in version 0.7.7
+- STT Node - Set correct content-type when File-Type reports a mime type of audio/opus for ogg;codec=opus files.
+
+### New in version 0.7.6
+- Bump SDK Dependency to 3.18.2
+- STT Node To use iam-utils in place of removed iam-token-manager
+- STT Node removed codec setting as service can now automatically detect the codec of the input audio and supports more than codec=opus for ogg formats.
+- TSS Node fix to add visibility check on tts.voices and not stt.models
+- Assistant V1 Workspace Manager Node updated to reflect that in update mode, updated fields
+need a new_ prefix in their keys as part of the input json.
+- NLC Node - migrate off deprecated methods
+- NLC Node - Allow create of a classier to be based on a csv template node.
+
+### New in version 0.7.5
+- Bump SDK Dependency to 3.15.0
+- Added Portuguese (Brazilian) and Chinese (Simplified and Traditional) as output languages
+for Visual Recognition node.
+- Added list voices and delete customisation methods to TTS Corpus Builder node.
+- STT Node Changes
+  - Allowing SDK to manage IAM Tokens.
+  - Streaming mode for STT using IAM key now working.
+  - Fix to stream mode for max alternatives and smart formatting options
+  - Keywords, Word Confidence and Customization Weight can now be specified
+  - Allow Start and End data packets to be specified as JSON objects, as well as
+a stringified JSON objects.
+  - In line with SDK change use createLanguageModel() to create custom model
+- Disable SSL Verification option for Assistant Node.
+- Natural Language Understanding Node Changes
+  - Bump Natural Language Understanding to 2018-11-16
+  - Add Limit Categories and limit_text_characters options
+- Allow JSON input into Personality Insights node.
+- Japanese word count was causing a Node-RED crash when run in the cloud.
+- Hungarian supported by Language Translator.
+- New Document Language Translator node.
+- New Assistant V2 Node.
+- Discovery Node changes
+  - Bump Discovery to 2018-12-03
+  - Implement Query Notices method
+- Bump dependency on file-type to 10.7.0
+- Bump dependency on temp to 0.9.0
+
+
 ### New in version 0.7.4
 - Bump SDK Dependency to 3.11.0
 - Bump Assistant version to 2018-09-20

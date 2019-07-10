@@ -21,6 +21,11 @@
         </div>
     </div>
 
+    <div class="form-row" style="padding-top: 10px;">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
     <div class="form-row credentials" style="display: none;">
         <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
         <input type="text" id="node-input-username" placeholder="Username">
@@ -57,6 +62,11 @@
               <input style="width: 30px; margin-left: 20px; margin-top: 0;"
                      type="checkbox" id="node-input-categories" />
               <label style="width: auto;" for="node-input-categories">Categories</label>
+            </div>
+            <div>
+              <label style="width: auto;" for="node-input-limitcategories">Limit Categories</label>
+              <input type="number" min="1" max="10"
+                     id="node-input-limitcategories" />
             </div>
 
             <div>
@@ -169,13 +179,36 @@
                      id="node-input-maxsemantics" />
             </div>
 
-          </div>
+            <div>
+              <input style="width: 30px; margin-left: 20px; margin-top: 0;"
+                     type="checkbox" id="node-input-syntax" />
+              <label style="width: auto;" for="node-input-syntax">Syntax</label>
+            </div>
+            <div>
+              <input style="width: 30px; margin-left: 20px; margin-top: 0;"
+                     type="checkbox" id="node-input-syntax-sentences" />
+              <label style="width: auto;" for="node-input-syntax-sentences">Syntax Sentences</label>
+            </div>
+            <div>
+              <input style="width: 30px; margin-left: 20px; margin-top: 0;"
+                     type="checkbox" id="node-input-syntax-tokens-lemma" />
+              <label style="width: auto;" for="node-input-syntax-tokens-lemma">Lemma Tokens</label>
+            </div>
+            <div>
+              <input style="width: 30px; margin-left: 20px; margin-top: 0;"
+                     type="checkbox" id="node-input-syntax-tokens-pos" />
+              <label style="width: auto;" for="node-input-syntax-tokens-pos">Part of Speech</label>
+            </div>
 
-        </div>
-    <div class="form-row" style="padding-top: 10px;">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+          </div>
     </div>
+
+    <div class="form-row">
+        <label for="node-input-limittextcharacters">Limit Text Characters</label>
+        <input type="number" min="0" step='1'
+                 id="node-input-limittextcharacters" />
+    </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="natural-language-understanding">
@@ -203,8 +236,14 @@
         <li><b>Relations</b>, identify Subject-Action-Object relations.</li>
         <li><b>Semantic Roles</b>, parse out sentences into subject,
                                 action, and object form.</li>
+        <li><b>Syntax</b>, Returns information about the tokens and sentences in
+                           the input text. </li>
 
     </ul>
+    <p>
+      You can limit the text analyzed by setting limit text characters. A value
+      of 0 applies no limit.
+    </p>
     <p>For full details on the feature details,
       please see the
       <a href="https://www.ibm.com/watson/services/natural-language-understanding/">
@@ -237,6 +276,7 @@
 
   nluV1.hideAll = function() {
     $('#node-input-maxconcepts').parent().hide();
+    $('#node-input-limitcategories').parent().hide();
     $('#node-input-doc-emotion-target').parent().hide();
     $('#node-input-doc-sentiment-target').parent().hide();
     $('#node-input-entity-emotion').parent().hide();
@@ -248,6 +288,9 @@
     $('#node-input-semantic-entities').parent().hide();
     $('#node-input-semantic-keywords').parent().hide();
     $('#node-input-maxsemantics').parent().hide();
+    $('#node-input-syntax-sentences').parent().hide();
+    $('#node-input-syntax-tokens-lemma').parent().hide();
+    $('#node-input-syntax-tokens-pos').parent().hide();
   };
 
   nluV1.setVisibility = function(field, visible) {
@@ -273,6 +316,9 @@
     nluV1.CreateIListener($('#node-input-concepts'),
                                $('#node-input-maxconcepts'));
 
+    nluV1.CreateIListener($('#node-input-categories'),
+                               $('#node-input-limitcategories'));
+
     nluV1.CreateIListener($('#node-input-doc-emotion'),
                                 $('#node-input-doc-emotion-target'));
 
@@ -297,6 +343,12 @@
 
     nluV1.CreateIListener($('#node-input-default-endpoint'),
                                 $('#node-input-service-endpoint'), true);
+
+    nluV1.CreateIListener($('#node-input-syntax'),
+                                $('#node-input-syntax-sentences'
+                                    + ', #node-input-syntax-tokens-lemma'
+                                    + ', #node-input-syntax-tokens-pos'));
+
 
   }
 
@@ -326,6 +378,7 @@
             defaults: {
               'name': {value: ''},
               'categories': {value: false},
+              'limitcategories': {value: '3'},
               'concepts': {value: false},
               'maxconcepts': {value: '8'},
               'doc-emotion': {value: false},
@@ -346,6 +399,11 @@
               'semantic-entities': {value: false},
               'semantic-keywords': {value: false},
               'maxsemantics' :{value: '50'},
+              'limittextcharacters': {value: '0'},
+              'syntax': {value: false},
+              'syntax-sentences': {value: false},
+              'syntax-tokens-lemma': {value: false},
+              'syntax-tokens-pos': {value: false},
               'default-endpoint' :{value: true},
               'service-endpoint' :{value: 'https://gateway.watsonplatform.net/natural-language-understanding/api'}
             },
