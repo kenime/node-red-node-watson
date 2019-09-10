@@ -192,7 +192,7 @@ module.exports = function(RED) {
 
     if (apiKey) {
       serviceSettings.iam_apikey = apiKey;
-      if (iam_url) {
+      if (iamUrl) {
         serviceSettings.iam_url = iamUrl;
       }
     } else {
