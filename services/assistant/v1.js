@@ -162,6 +162,7 @@ module.exports = function(RED) {
     let userName = sUsername || node.credentials.username,
       passWord = sPassword || node.credentials.password,
       apiKey = sApikey || node.credentials.apikey,
+      iamUrl = null,
       endpoint = '',
       optoutLearning = false,
       version = '2018-09-20';
@@ -184,10 +185,16 @@ module.exports = function(RED) {
       if (msg.params.version) {
         version = msg.params.version;
       }
+      if (msg.params.iamurl) {
+        iamUrl = msg.params.iamurl;
+      }
     }
 
     if (apiKey) {
       serviceSettings.iam_apikey = apiKey;
+      if (iam_url) {
+        serviceSettings.iam_url = iamUrl;
+      }
     } else {
       serviceSettings.username = userName;
       serviceSettings.password = passWord;
