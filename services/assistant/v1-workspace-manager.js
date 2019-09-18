@@ -28,7 +28,8 @@ module.exports = function (RED) {
     username = '', password = '', sUsername = '', sPassword = '',
     apikey = '', sApikey = '',
     endpoint = '', sEndpoint = '',
-    version = '2018-09-20';
+    version = '2018-09-20',
+    iamUrl = null;
 
   if (!service) {
     service = serviceutils.getServiceCreds(OLD_SERVICE_IDENTIFIER);
@@ -517,6 +518,9 @@ module.exports = function (RED) {
 
     if (apikey) {
       serviceSettings.iam_apikey = apikey;
+      if (iamUrl) {
+        serviceSettings.iam_url = iamUrl;
+      }
     } else {
       serviceSettings.username = username;
       serviceSettings.password = password;
@@ -1106,6 +1110,9 @@ module.exports = function (RED) {
         }
         if (msg.params.version) {
           version = msg.params.version;
+        }
+        if (msg.params.iamurl) {
+          iamUrl = msg.params.iamurl;
         }
       }
       endpoint = sEndpoint;
