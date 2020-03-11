@@ -213,6 +213,27 @@ module.exports = function(RED) {
         authSettings.username = userName;
         authSettings.password = passWord;
       }
+      const url = require('url');
+      const httpsProxy = url.parse(process.env.HTTPS_PROXY);
+      const proxyTunnel = null;
+      if (httpsProxy && httpsProxy.protocol === 'http:' ) {
+        // Using HTTP proxy for https, need tunneling
+        // Refer to watson-developer-cloud/node-sdk#900
+        const tunnel = require('tunnel');
+
+        const proxyHost = httpsProxy.hostname;
+        const proxyPort = httpsProxy.port;
+        proxyTunnel = tunnel.httpsOverHttp({
+          host: proxyHost,
+          port: proxyPort,
+        });
+      }
+
+      if (proxyTunnel) {
+        authSettings.httpsAgent = proxyTunnel;
+        authSettings.proxy = false;
+      }
+
       serviceSettings.authenticator = new IamAuthenticator(authSettings);
 
       serviceSettings.version = version;
@@ -253,6 +274,11 @@ module.exports = function(RED) {
 
       if (msg.params && msg.params.disable_ssl_verification){
         serviceSettings.disable_ssl_verification = true;
+      }
+
+      if (proxyTunnel) {
+        serviceSettings.httpsAgent = proxyTunnel;
+        serviceSettings.proxy = false;
       }
 
       node.service = new AssistantV1(serviceSettings);
